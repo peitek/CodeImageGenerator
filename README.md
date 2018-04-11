@@ -16,7 +16,7 @@ Implemented so far:
 * Reads all files from a directory, and parses one at a time
 * Extracts just the function code from the file (and ignores the class, comments, etc around it)
 * Uses Pygments to create syntax highlighting for the code
-* Parses Pygments syntax highlighting to a Presentation-compatible format
+* Parses Pygments syntax highlighting to fit on the image
 * Rough image creation
 
 ## Roadmap
