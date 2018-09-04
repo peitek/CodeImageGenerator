@@ -1,16 +1,19 @@
 from os.path import join
 
 
-code_function_start_lookups = ['public int ', 'public String ', 'public Integer ', 'public float ', 'public boolean ', 'public double[] ', 'public int[] ']
+code_function_start_lookups_java = ['public int ', 'public String ', 'public Integer ', 'public float ', 'public boolean ', 'public double[] ', 'public int[] ']
+code_function_start_lookups_python = ['def']
 
+extend_task = True
+extend_task_string = "What is the result of "
 
-def convert_file(file_directory, file_name):
+def convert_file(file_directory, language, file_name):
     with open(join(file_directory, file_name)) as text_file:
         code_file = text_file.read()
 
         # extract Java function from code file
         try:
-            code_function_start, code_function_string, code_task = extract_function_from_file(code_file)
+            code_function_start, code_function_string, code_task = extract_function_from_file(code_file, language)
         except Exception:
             print("File could not extract a code function: ", file_name)
             return
@@ -36,10 +39,20 @@ def convert_file(file_directory, file_name):
             .replace('TD', '') \
             .replace('SY', '')
 
+        if extend_task:
+            code_task = extend_task_string + code_task + '?'
+
         return [function_name, code_function_string, code_task]
 
 
-def extract_function_from_file(code_file):
+def extract_function_from_file(code_file, language):
+    if language == 'Java':
+        code_function_start_lookups = code_function_start_lookups_java
+    elif language == 'Python':
+        code_function_start_lookups = code_function_start_lookups_python
+    else:
+        raise ValueError('Language is not supported: ', language)
+
     # TODO support multiple functions for each file
     code_function_start = next((x for x in code_function_start_lookups if x in code_file), False)
 
@@ -57,16 +70,29 @@ def extract_function_from_file(code_file):
 
     code_function_position = code_file.find(code_function_start)
     code_function_string = code_file[code_function_position:]
+    if language == 'Java':
+        code_function_string = find_function_body_as_string_java(code_function_string)
+    elif language == 'Python':
+        code_function_string_end = code_function_string.find('print')
+        code_function_string = code_function_string[:code_function_string_end - 1]
+
+    return code_function_start, code_function_string, code_task_string
+
+
+def find_function_body_as_string_java(code_function_string):
     number_of_open_curly_brackets = 0
     code_function_end = -1
+
     for i, c in enumerate(code_function_string):
         if c == "{":
             number_of_open_curly_brackets += 1
 
         if c == "}":
             number_of_open_curly_brackets -= 1
-            if (number_of_open_curly_brackets <= 0):
+            if number_of_open_curly_brackets <= 0:
                 code_function_end = i
                 break
+
     code_function_string = code_function_string[:code_function_end + 1]
-    return code_function_start, code_function_string, code_task_string
+
+    return code_function_string

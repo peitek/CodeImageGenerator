@@ -16,7 +16,7 @@ FONT_SIZE = 32
 OUTPUT_DIRECTORY = 'output_images'
 
 
-def create_image_from_code(function_name, code, code_task=""):
+def create_image_from_code(language, function_name, code, code_task=""):
     print("creating image for " + function_name)
     full_size_x = 1280  # 1920
     full_size_y = 1024  # 1080
@@ -30,7 +30,7 @@ def create_image_from_code(function_name, code, code_task=""):
     draw.text((full_size_x / 2 - instruction_width / 2, (full_size_y / 20)), code_task, FONT_COLOR_INSTRUCTION, font=inconsolata)
 
     # draw code
-    code_in_html = create_syntax_highlighting_html(code)
+    code_in_html = create_syntax_highlighting_html(language, code)
     code_in_html = html.unescape(code_in_html)
     code_in_html = code_in_html.replace('\t', '    ')
     code_in_html = code_in_html.replace('<span></span>', '')
@@ -49,8 +49,9 @@ def create_image_from_code(function_name, code, code_task=""):
             break
 
         # remove four first characters from each line to offset the incorrect indentation
-        if code_line.startswith('    '):
-            code_line = code_line[4:]
+        if language == 'Java':
+            if code_line.startswith('    '):
+                code_line = code_line[4:]
 
         code_elements = code_line.split('<span')
 
@@ -102,12 +103,12 @@ def get_color_for_span_class(span_class):
     }.get(span_class, (255, 255, 255))
 
 
-def create_syntax_highlighting_html(code_function_string):
+def create_syntax_highlighting_html(language, code_function_string):
     # Create Pygments formatter (http://pygments.org/)
     formatter = formatters.get_formatter_by_name('html')
     formatter.full = True
     formatter.style = styles.get_style_by_name('manni')
-    lexer = lexers.get_lexer_by_name('Java')
+    lexer = lexers.get_lexer_by_name(language)
 
     # Use pygments to create code with syntax highlighting in HTML
     code_in_html = pygments.highlight(code_function_string, lexer, formatter)
