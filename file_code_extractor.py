@@ -75,6 +75,7 @@ def extract_function_from_file(code_file, language):
     elif language == 'Python':
         code_function_string_end = code_function_string.find('print')
         code_function_string = code_function_string[:code_function_string_end - 1]
+        code_function_string = code_function_string.rstrip()
 
     return code_function_start, code_function_string, code_task_string
 

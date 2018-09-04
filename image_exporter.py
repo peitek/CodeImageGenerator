@@ -10,8 +10,10 @@ import pygments.lexers as lexers
 import pygments.formatters as formatters
 import pygments.styles as styles
 
-FONT_COLOR_INSTRUCTION = (200, 200, 200)
-FONT_SIZE = 32
+FONT_COLOR_INSTRUCTION = (220, 220, 220)
+FONT_SIZE = 40
+#VERTICAL_PADDING = 1.4
+VERTICAL_PADDING = 1.8
 
 OUTPUT_DIRECTORY = 'output_images'
 
@@ -36,7 +38,7 @@ def create_image_from_code(language, function_name, code, code_task=""):
     code_in_html = code_in_html.replace('<span></span>', '')
 
     (allTextSizeX, allTextSizeY) = ImageDraw.ImageDraw(image).multiline_textsize(text=code, font=inconsolata)
-    allTextSizeY *= 1.4  # for additional vertical padding, otherwise the text is too hard to read
+    allTextSizeY *= VERTICAL_PADDING  # for additional vertical padding, otherwise the text is too hard to read
 
     x_pos_start = (full_size_x / 2) - (allTextSizeX / 2)
     y_pos = (full_size_y / 2) - (allTextSizeY / 2)
@@ -56,7 +58,7 @@ def create_image_from_code(language, function_name, code, code_task=""):
         code_elements = code_line.split('<span')
 
         x_pos = x_pos_start
-        y_pos += (verticalPadding * 1.4)
+        y_pos += (verticalPadding * VERTICAL_PADDING)
 
         for element in code_elements:
             element = element.replace('</span>', '')
@@ -68,7 +70,7 @@ def create_image_from_code(language, function_name, code, code_task=""):
                 span_class = element[8:end_pos - 1]
                 element = element[end_pos + 1:]
 
-            draw.text((x_pos, y_pos), element, get_color_for_span_class(span_class), font=inconsolata)
+            draw.text((x_pos, y_pos), element, get_color_for_span_class(element, span_class), font=inconsolata)
             (sizeX, sizeY) = ImageDraw.ImageDraw(image).textsize(text=element, font=inconsolata)
             x_pos += sizeX
 
@@ -85,20 +87,27 @@ def write_image_to_file(file_name, image):
     image.save(join(OUTPUT_DIRECTORY, file_name + '.png'), 'PNG')
 
 
-def get_color_for_span_class(span_class):
+def get_color_for_span_class(element, span_class):
+    # some exception cases:
+    if element.rstrip() == 'sum' or element.rstrip() == 'input':
+        return 255, 255, 255
+
     return {
         'kc': (0, 128, 0),
         'kd': (0, 0, 255),
-        'k': (0, 128, 64),
+        'k': (50, 178, 114), # function name
         'kt': (67, 168, 237),
-        'mi': (85, 26, 139),
-        'nf': (102, 255, 255),
+        'mi': (155, 96, 209), # numbers
+        'n': (50, 178, 114),  # python: "math" class [#todo for Java it was set as 255,255,255 --> test the impact of this change]
+        'nb': (50, 178, 114), # python: "len" operator
+        'nf': (122, 255, 255),
         'na': (125, 144, 41),
         'String': (125, 144, 41),
-        'o': (102, 102, 102),
+        'o': (125, 125, 125), # (assignment) operators
+        'ow': (50, 178, 114), # python: "in" operator
+        'p': (220, 220, 220), # python: [] characters
         's': (0, 128, 0),
         'sc': (0, 128, 0),
-        'n': (255, 255, 255),
         'err': (255, 255, 255),
     }.get(span_class, (255, 255, 255))
 
