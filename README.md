@@ -17,6 +17,8 @@ Implemented so far:
 * Extracts just the function code from the file (and ignores the class, comments, etc around it)
 * Uses Pygments to create syntax highlighting for the code
 * Parses Pygments syntax highlighting to fit on the image
+* Dynamically reduces font size if the code doesn't fit the screen
+* Rough support for Java and Python functions
 * Rough image creation
 
 ## Roadmap
@@ -25,12 +27,11 @@ Things I may add in the future:
 
 * Better and cleaner (Python) code...
 * Better configuration (in particular the output color scheme)
-* Warnings when code doesn't fit on screen
 * Command line support
 * Allow multiple functions per file
 * Allow functions besides `public int`, `public String`, `public boolean`, and a couple of other static ones
 * Only read Java files
-* Support for more languages than just Java
+* Support for more languages than just Java and Python
 
 
 ## Font
