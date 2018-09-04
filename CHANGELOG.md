@@ -4,8 +4,9 @@
 
 - Added support to create images from Python source code
 - Added support to statically extend the task instruction
-- Improved syntax highlighting for Python
-- Increased code font size to better use available space (better suitability for eye tracking)
+- Significantly increased code font sizes and vertical paddings to better use available space (better suitability for eye tracking)
+- For longer snippets, dynamically compute a smaller font size/vertical padding to fit the screen
+- Improved syntax highlighting colors for Python
 - Tweaked font colors to be slightly brighter
 
 ## 0.1.0 (2018-04-11)

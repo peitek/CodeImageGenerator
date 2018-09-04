@@ -7,6 +7,7 @@ code_function_start_lookups_python = ['def']
 extend_task = True
 extend_task_string = "What is the result of "
 
+
 def convert_file(file_directory, language, file_name):
     with open(join(file_directory, file_name)) as text_file:
         code_file = text_file.read()
@@ -75,7 +76,7 @@ def extract_function_from_file(code_file, language):
     elif language == 'Python':
         code_function_string_end = code_function_string.find('print')
         code_function_string = code_function_string[:code_function_string_end - 1]
-        code_function_string = code_function_string.rstrip()
+        code_function_string = code_function_string.lstrip().rstrip()
 
     return code_function_start, code_function_string, code_task_string
 

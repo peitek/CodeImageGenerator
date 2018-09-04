@@ -11,25 +11,29 @@ import pygments.formatters as formatters
 import pygments.styles as styles
 
 FONT_COLOR_INSTRUCTION = (220, 220, 220)
-FONT_SIZE = 40
-#VERTICAL_PADDING = 1.4
-VERTICAL_PADDING = 1.8
+
+FONT_SIZE_INSTRUCTION = 44
+FONT_SIZE_CODE = 52
+
+DEFAULT_VERTICAL_PADDING = 1.5
+
+IMAGE_SIZE_X = 1280  # 1920
+IMAGE_SIZE_Y = 1024  # 1080
 
 OUTPUT_DIRECTORY = 'output_images'
 
 
 def create_image_from_code(language, function_name, code, code_task=""):
     print("creating image for " + function_name)
-    full_size_x = 1280  # 1920
-    full_size_y = 1024  # 1080
-    image = Image.new('RGBA', (full_size_x, full_size_y), (0, 0, 0))
+
+    image = Image.new('RGBA', (IMAGE_SIZE_X, IMAGE_SIZE_Y), (0, 0, 0))
     draw = ImageDraw.Draw(image)
 
-    inconsolata = ImageFont.truetype('fonts/Inconsolata-Regular.ttf', FONT_SIZE)
+    inconsolata_instructions = ImageFont.truetype('fonts/Inconsolata-Regular.ttf', FONT_SIZE_INSTRUCTION)
 
     # draw instructions for code task
-    (instruction_width, instruction_height) = ImageDraw.ImageDraw(image).textsize(text=code_task, font=inconsolata)
-    draw.text((full_size_x / 2 - instruction_width / 2, (full_size_y / 20)), code_task, FONT_COLOR_INSTRUCTION, font=inconsolata)
+    (instruction_width, instruction_height) = ImageDraw.ImageDraw(image).textsize(text=code_task, font=inconsolata_instructions)
+    draw.text((IMAGE_SIZE_X / 2 - instruction_width / 2, (IMAGE_SIZE_Y / 30)), code_task, FONT_COLOR_INSTRUCTION, font=inconsolata_instructions)
 
     # draw code
     code_in_html = create_syntax_highlighting_html(language, code)
@@ -37,12 +41,30 @@ def create_image_from_code(language, function_name, code, code_task=""):
     code_in_html = code_in_html.replace('\t', '    ')
     code_in_html = code_in_html.replace('<span></span>', '')
 
-    (allTextSizeX, allTextSizeY) = ImageDraw.ImageDraw(image).multiline_textsize(text=code, font=inconsolata)
-    allTextSizeY *= VERTICAL_PADDING  # for additional vertical padding, otherwise the text is too hard to read
+    font_size = FONT_SIZE_CODE
+    additional_vertical_padding = DEFAULT_VERTICAL_PADDING
+    while True:
+        inconsolata = ImageFont.truetype('fonts/Inconsolata-Regular.ttf', font_size)
 
-    x_pos_start = (full_size_x / 2) - (allTextSizeX / 2)
-    y_pos = (full_size_y / 2) - (allTextSizeY / 2)
-    (nil, verticalPadding) = ImageDraw.ImageDraw(image).textsize(text='blubb', font=inconsolata)
+        (allTextSizeX, allTextSizeY) = ImageDraw.ImageDraw(image).multiline_textsize(text=code, font=inconsolata)
+        allTextSizeY *= additional_vertical_padding  # for additional vertical padding, otherwise the text is too hard to read
+
+        if allTextSizeX > 0.95*IMAGE_SIZE_X:
+            print('Too much code text to horizontally fit on the configured image size -> trying a smaller font')
+
+            font_size -= 1
+        elif allTextSizeY > 0.85 * (IMAGE_SIZE_Y - instruction_height):
+            print('Too much code text to vertically fit on the configured image size -> trying a smaller font and less padding')
+
+            font_size -= 1
+            additional_vertical_padding -= 0.08
+        else:
+            break
+
+    (nil, height_of_font) = ImageDraw.ImageDraw(image).textsize(text='placeholder text', font=inconsolata)
+
+    x_pos_start = (IMAGE_SIZE_X / 2) - (allTextSizeX / 2)
+    y_pos = (IMAGE_SIZE_Y / 2) - (allTextSizeY / 2) - height_of_font
 
     code_in_html_lines = code_in_html.split("\n")
 
@@ -58,7 +80,7 @@ def create_image_from_code(language, function_name, code, code_task=""):
         code_elements = code_line.split('<span')
 
         x_pos = x_pos_start
-        y_pos += (verticalPadding * VERTICAL_PADDING)
+        y_pos += (height_of_font * additional_vertical_padding)
 
         for element in code_elements:
             element = element.replace('</span>', '')
@@ -91,14 +113,19 @@ def get_color_for_span_class(element, span_class):
     # some exception cases:
     if element.rstrip() == 'sum' or element.rstrip() == 'input':
         return 255, 255, 255
+    elif element.rstrip() == 'in' or \
+         element.rstrip() == 'range' or \
+         element.rstrip() == 'len' or \
+         element.rstrip() == 'math':
+        return 67, 168, 237
 
     return {
         'kc': (0, 128, 0),
         'kd': (0, 0, 255),
-        'k': (50, 178, 114), # function name
+        'k': (50, 178, 114),  # python keywords: def, return, if
         'kt': (67, 168, 237),
         'mi': (155, 96, 209), # numbers
-        'n': (50, 178, 114),  # python: "math" class [#todo for Java it was set as 255,255,255 --> test the impact of this change]
+        'n': (255, 255, 255),  # regular source code text
         'nb': (50, 178, 114), # python: "len" operator
         'nf': (122, 255, 255),
         'na': (125, 144, 41),
