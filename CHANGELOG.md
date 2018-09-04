@@ -6,6 +6,7 @@
 - Added support to statically extend the task instruction
 - Significantly increased code font sizes and vertical paddings to better use available space (better suitability for eye tracking)
 - For longer snippets, dynamically compute a smaller font size/vertical padding to fit the screen
+- For longer instruction texts, dynamically compute a smaller font size/vertical padding to fit the screen
 - Improved syntax highlighting colors for Python
 - Tweaked font colors to be slightly brighter
 

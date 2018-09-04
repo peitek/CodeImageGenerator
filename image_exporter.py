@@ -29,10 +29,20 @@ def create_image_from_code(language, function_name, code, code_task=""):
     image = Image.new('RGBA', (IMAGE_SIZE_X, IMAGE_SIZE_Y), (0, 0, 0))
     draw = ImageDraw.Draw(image)
 
-    inconsolata_instructions = ImageFont.truetype('fonts/Inconsolata-Regular.ttf', FONT_SIZE_INSTRUCTION)
+    # draw instructions for code task after figuring out fitting font size
+    font_size_instruction = FONT_SIZE_INSTRUCTION
+    while True:
+        inconsolata_instructions = ImageFont.truetype('fonts/Inconsolata-Regular.ttf', font_size_instruction)
 
-    # draw instructions for code task
-    (instruction_width, instruction_height) = ImageDraw.ImageDraw(image).textsize(text=code_task, font=inconsolata_instructions)
+        (instruction_width, instruction_height) = ImageDraw.ImageDraw(image).textsize(text=code_task, font=inconsolata_instructions)
+
+        if instruction_width > 0.95*IMAGE_SIZE_X:
+            print('Too much instruction text to horizontally fit on the configured image size -> trying a smaller font')
+
+            font_size_instruction -= 1
+        else:
+            break
+
     draw.text((IMAGE_SIZE_X / 2 - instruction_width / 2, (IMAGE_SIZE_Y / 30)), code_task, FONT_COLOR_INSTRUCTION, font=inconsolata_instructions)
 
     # draw code
