@@ -18,6 +18,7 @@ Implemented so far:
 * Uses Pygments to create syntax highlighting for the code
 * Parses Pygments syntax highlighting to fit on the image
 * Dynamically reduces font size if the code doesn't fit the screen
+* Option to either strip boilerplate code and reduce to single method (or use full file)
 * Rough support for Java and Python functions
 * Rough image creation
 
@@ -28,7 +29,6 @@ Things I may add in the future:
 * Better and cleaner (Python) code...
 * Better configuration (in particular the output color scheme)
 * Command line support
-* Allow multiple functions per file
 * Allow functions besides `public int`, `public String`, `public boolean`, and a couple of other static ones
 * Only read Java files
 * Support for more languages than just Java and Python

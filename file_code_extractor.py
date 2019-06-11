@@ -1,44 +1,50 @@
 from os.path import join
 
 
-code_function_start_lookups_java = ['public int ', 'public String ', 'public Integer ', 'public float ', 'public boolean ', 'public double[] ', 'public int[] ']
-code_function_start_lookups_python = ['def']
+code_function_start_lookups_java = ['public int ', 'public String ', 'public String[ ', 'public Integer ', 'public float ', 'public boolean ', 'public double[] ', 'public int[] ']
+code_function_start_lookups_python = ['def', 'df']
 
 extend_task = True
 extend_task_string = "What is the result of "
 
 
-def convert_file(file_directory, language, file_name):
+def convert_file(file_directory, language, strip_boilerplate, file_name):
     with open(join(file_directory, file_name)) as text_file:
         code_file = text_file.read()
 
-        # extract Java function from code file
-        try:
-            code_function_start, code_function_string, code_task = extract_function_from_file(code_file, language)
-        except Exception:
-            print("File could not extract a code function: ", file_name)
-            return
+        if strip_boilerplate:
+            # extract Java function from code file
+            try:
+                code_function_start, code_function_string, code_task = extract_function_from_file(code_file, language)
+            except Exception:
+                print("File could not extract a code function: ", file_name)
+                return
 
-        # get name of the function to specify the Presentation code block
-        # TODO figure out unscrambled function name
-        function_name_string = code_function_string[len(code_function_start):]
-        function_name_position_end = function_name_string.find("(")
-        function_name = function_name_string[:function_name_position_end]
+            # get name of the function to specify the Presentation code block
+            # TODO figure out unscrambled function name
+            function_name_string = code_function_string[len(code_function_start):]
+            function_name_position_end = function_name_string.find("(")
+            function_name = function_name_string[:function_name_position_end]
 
-        # remove FILE_SELECTION_SUBSTRINGS (LDBO, ..) from function name
-        # TODO limit it to the function name to prevent bugs
-        # TODO make this code more dynamic
-        code_function_string = code_function_string \
-            .replace('TD_B', '') \
-            .replace('TD_N', '') \
-            .replace('TD_U', '') \
-            .replace('LDBO', '') \
-            .replace('LDBS', '') \
-            .replace('LOBO', '') \
-            .replace('LOBS', '') \
-            .replace('BU', '') \
-            .replace('TD', '') \
-            .replace('SY', '')
+            # remove FILE_SELECTION_SUBSTRINGS (LDBO, ..) from function name
+            # TODO limit it to the function name to prevent bugs
+            # TODO make this code more dynamic
+            code_function_string = code_function_string \
+                .replace('TD_B', '') \
+                .replace('TD_N', '') \
+                .replace('TD_U', '') \
+                .replace('LDBO', '') \
+                .replace('LDBS', '') \
+                .replace('LOBO', '') \
+                .replace('LOBS', '') \
+                .replace('BU', '') \
+                .replace('TD', '') \
+                .replace('SY', '')
+
+        else:
+            function_name = file_name.replace('.java', '')
+            code_function_string = code_file
+            code_task = ""
 
         if extend_task:
             code_task = extend_task_string + code_task + '?'

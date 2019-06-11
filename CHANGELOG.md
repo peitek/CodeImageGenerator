@@ -1,5 +1,10 @@
 # Changelog #
 
+## 0.3.0 (2019-06-11)
+- Added support for code snippets with multiple functions
+- Added configuration to (not) remove boilerplate code
+- Adjusted some minor code display configurations (e.g., added minimum text margin, only optionally remove indentation)
+
 ## 0.2.0 (2018-09-04)
 
 - Added support to create images from Python source code

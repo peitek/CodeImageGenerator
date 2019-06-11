@@ -12,10 +12,13 @@ import pygments.styles as styles
 
 FONT_COLOR_INSTRUCTION = (220, 220, 220)
 
-FONT_SIZE_INSTRUCTION = 44
-FONT_SIZE_CODE = 52
+FONT_SIZE_INSTRUCTION = 38
+FONT_SIZE_CODE = 44
 
-DEFAULT_VERTICAL_PADDING = 1.5
+DEFAULT_VERTICAL_PADDING = 1.6
+MINIMUM_VERTICAL_PADDING = 1.05
+
+REMOVE_DEFAULT_INDENTATION = False
 
 IMAGE_SIZE_X = 1280  # 1920
 IMAGE_SIZE_Y = 1024  # 1080
@@ -37,7 +40,7 @@ def create_image_from_code(language, function_name, code, code_task=""):
         (instruction_width, instruction_height) = ImageDraw.ImageDraw(image).textsize(text=code_task, font=inconsolata_instructions)
 
         if instruction_width > 0.95*IMAGE_SIZE_X:
-            print('Too much instruction text to horizontally fit on the configured image size -> trying a smaller font')
+            print('-> Too much instruction text to horizontally fit on the configured image size -> trying a smaller font')
 
             font_size_instruction -= 1
         else:
@@ -60,14 +63,15 @@ def create_image_from_code(language, function_name, code, code_task=""):
         allTextSizeY *= additional_vertical_padding  # for additional vertical padding, otherwise the text is too hard to read
 
         if allTextSizeX > 0.95*IMAGE_SIZE_X:
-            print('Too much code text to horizontally fit on the configured image size -> trying a smaller font')
+            print('-> Too much code text to horizontally fit on the configured image size -> trying a smaller font')
 
             font_size -= 1
         elif allTextSizeY > 0.85 * (IMAGE_SIZE_Y - instruction_height):
-            print('Too much code text to vertically fit on the configured image size -> trying a smaller font and less padding')
+            print('-> Too much code text to vertically fit on the configured image size -> trying a smaller font and less padding')
 
             font_size -= 1
-            additional_vertical_padding -= 0.08
+            if additional_vertical_padding > MINIMUM_VERTICAL_PADDING:
+                additional_vertical_padding -= 0.08
         else:
             break
 
@@ -83,9 +87,10 @@ def create_image_from_code(language, function_name, code, code_task=""):
             break
 
         # remove four first characters from each line to offset the incorrect indentation
-        if language == 'Java':
-            if code_line.startswith('    '):
-                code_line = code_line[4:]
+        if REMOVE_DEFAULT_INDENTATION:
+            if language == 'Java':
+                if code_line.startswith('    '):
+                    code_line = code_line[4:]
 
         code_elements = code_line.split('<span')
 
@@ -121,7 +126,7 @@ def write_image_to_file(file_name, image):
 
 def get_color_for_span_class(element, span_class):
     # some exception cases:
-    if element.rstrip() == 'sum' or element.rstrip() == 'input':
+    if element.rstrip() == 'sum' or element.rstrip() == 'input' or element.rstrip() == 'reversed':
         return 255, 255, 255
     elif element.rstrip() == 'in' or \
          element.rstrip() == 'range' or \
