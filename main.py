@@ -7,16 +7,8 @@ import image_exporter
 # TODO make config accessible from outside
 # config
 
-CODE_FILE_DIRECTORY = "C:/Users/npeitek/Documents/fmri-code-complexity/complexity-snippets/src/progcode4"
-
-#CODE_FILE_DIRECTORY = "C:/Users/npeitek/Documents/fmri-td/CodeSnippets/java/src/com/fmri/topdown/original/number"
-#CODE_FILE_DIRECTORY = "C:/Users/npeitek/Documents/fmri-td/CodeSnippets/java/src/com/fmri/topdown/original/words"
-#CODE_FILE_DIRECTORY = "C:/Users/npeitek/Documents/fmri-td/CodeSnippets/java/src/com/fmri/topdown/original/syntax"
+CODE_FILE_DIRECTORY = "C:/Users/Norman/Documents/Research/fmri-study-code-complexity-metrics/complexity-snippets/src/progcode5_prestudy"
 CODE_LANGUAGE = 'Java'
-
-#CODE_FILE_DIRECTORY = "C:/Users/npeitek/Documents/fmri-td/CodeSnippets/python/words"
-#CODE_LANGUAGE = 'Python'
-
 STRIP_BOILERPLATE_CODE = False
 
 # if only specific files should be selected based on their (sub)-names, set this to True and customize FILE_SELECTION_SUBSTRINGS
@@ -41,4 +33,5 @@ def main():
 
 
 # Just call main function at the moment
-main()
+if __name__ == '__main__':
+    main()

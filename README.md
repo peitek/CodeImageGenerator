@@ -1,11 +1,9 @@
 # CodeImageGenerator
 
-CodeImageGenerator is a Python script, which converts Java files/functions to images. This includes a rough custom syntax highlighting with [Pygments](http://pygments.org/).
+CodeImageGenerator is a Python script, which converts Java or Python files/functions to images. This includes a rough custom syntax highlighting with [Pygments](http://pygments.org/).
 
 I personally use this to convert short code snippets for empirical research on program comprehension (see [Brains on Code](https://github.com/brains-on-code)).
 This means the script is very personalized to my usage, and probably not directly useful to you without changes.
-
-**Disclaimer: I am not a Python programmer. I'm always grateful for feedback on how to improve my code.**
 
 ## Features
 
@@ -22,7 +20,7 @@ Implemented so far:
 * Rough support for Java and Python functions
 * Rough image creation
 
-## Roadmap
+## Limitations/Roadmap
 
 Things I may add in the future:
 

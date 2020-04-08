@@ -19,6 +19,7 @@ DEFAULT_VERTICAL_PADDING = 1.6
 MINIMUM_VERTICAL_PADDING = 1.05
 
 REMOVE_DEFAULT_INDENTATION = False
+DARKMODE = False
 
 IMAGE_SIZE_X = 1280  # 1920
 IMAGE_SIZE_Y = 1024  # 1080
@@ -29,7 +30,8 @@ OUTPUT_DIRECTORY = 'output_images'
 def create_image_from_code(language, function_name, code, code_task=""):
     print("creating image for " + function_name)
 
-    image = Image.new('RGBA', (IMAGE_SIZE_X, IMAGE_SIZE_Y), (0, 0, 0))
+    background_color = (0, 0, 0) if DARKMODE else (255, 255, 255)
+    image = Image.new('RGBA', (IMAGE_SIZE_X, IMAGE_SIZE_Y), background_color)
     draw = ImageDraw.Draw(image)
 
     # draw instructions for code task after figuring out fitting font size
@@ -107,7 +109,8 @@ def create_image_from_code(language, function_name, code, code_task=""):
                 span_class = element[8:end_pos - 1]
                 element = element[end_pos + 1:]
 
-            draw.text((x_pos, y_pos), element, get_color_for_span_class(element, span_class), font=inconsolata)
+            element_text_color = get_color_for_span_class(element, span_class, DARKMODE)
+            draw.text((x_pos, y_pos), element, element_text_color, font=inconsolata)
             (sizeX, sizeY) = ImageDraw.ImageDraw(image).textsize(text=element, font=inconsolata)
             x_pos += sizeX
 
@@ -124,34 +127,58 @@ def write_image_to_file(file_name, image):
     image.save(join(OUTPUT_DIRECTORY, file_name + '.png'), 'PNG')
 
 
-def get_color_for_span_class(element, span_class):
+def get_color_for_span_class(element, span_class, dark_mode=True):
     # some exception cases:
     if element.rstrip() == 'sum' or element.rstrip() == 'input' or element.rstrip() == 'reversed':
-        return 255, 255, 255
+        if dark_mode:
+            return 255, 255, 255
+        else:
+            return 0, 0, 0
     elif element.rstrip() == 'in' or \
          element.rstrip() == 'range' or \
          element.rstrip() == 'len' or \
          element.rstrip() == 'math':
         return 67, 168, 237
 
-    return {
-        'kc': (0, 128, 0),
-        'kd': (0, 0, 255),
-        'k': (50, 178, 114),  # python keywords: def, return, if
-        'kt': (67, 168, 237),
-        'mi': (155, 96, 209), # numbers
-        'n': (255, 255, 255),  # regular source code text
-        'nb': (50, 178, 114), # python: "len" operator
-        'nf': (122, 255, 255),
-        'na': (125, 144, 41),
-        'String': (125, 144, 41),
-        'o': (125, 125, 125), # (assignment) operators
-        'ow': (50, 178, 114), # python: "in" operator
-        'p': (220, 220, 220), # python: [] characters
-        's': (0, 128, 0),
-        'sc': (0, 128, 0),
-        'err': (255, 255, 255),
-    }.get(span_class, (255, 255, 255))
+    if dark_mode:
+        return {
+            'kc': (0, 128, 0), # true/false
+            'kd': (0, 0, 255), # keywords: public static keywords
+            'k': (50, 178, 114), # keywords: def, return, if
+            'kt': (67, 168, 237), # keywords: void, int, string
+            'mi': (155, 96, 209), # numbers
+            'n': (255, 255, 255), # regular source code text
+            'nb': (50, 178, 114), # python: "len" operator
+            'nf': (122, 255, 255), # function names
+            'na': (125, 144, 41),
+            'String': (125, 144, 41),
+            'o': (125, 125, 125), # (assignment) operators
+            'ow': (50, 178, 114), # python: "in" operator
+            'p': (220, 220, 220), # python: [] characters
+            's': (0, 128, 0), # string literal
+            'sc': (0, 128, 0),
+            'err': (255, 255, 255),
+        }.get(span_class, (255, 255, 255))
+    else:
+        # 176, 0, 64
+        return {
+            'kc': (0, 128, 0), # true/false
+            'kd': (0, 128, 0), # public static keywords
+            'k': (0, 128, 0), # keywords: def, return, if
+            'kt': (176, 0, 64), # keywords: void, int, string
+            'mi': (110, 30, 190), # numbers
+            'n': (0, 0, 0),  # regular source code text
+            'nb': (50, 178, 114),  # python: "len" operator##
+            'nf': (0, 0, 255), # function names
+            'na': (125, 144, 41),##
+            'String': (125, 144, 41),##
+            'o': (100, 100, 100), # (assignment) operators
+            'ow': (50, 178, 114), # python: "in" operator##
+            'p': (35, 35, 25),  # python: [] characters
+            's': (176, 0, 64), # string literal
+            'sc': (176, 0, 64),
+            'err': (0, 0, 0),
+        }.get(span_class, (0, 0, 0))
 
 
 def create_syntax_highlighting_html(language, code_function_string):

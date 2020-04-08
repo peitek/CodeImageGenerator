@@ -1,10 +1,9 @@
 from os.path import join
 
-
 code_function_start_lookups_java = ['public int ', 'public String ', 'public String[ ', 'public Integer ', 'public float ', 'public boolean ', 'public double[] ', 'public int[] ']
 code_function_start_lookups_python = ['def', 'df']
 
-extend_task = True
+extend_task = False
 extend_task_string = "What is the result of "
 
 
