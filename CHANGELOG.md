@@ -1,6 +1,8 @@
 # Changelog #
 
 ## 0.4.1 (2020-04-09)
+- restructure project to use modules
+- add basic tests for Java
 - Use more available space for larger images
 - Bug fix
 

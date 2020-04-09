@@ -1,8 +1,8 @@
 import os
 from os.path import isfile, join
 
-from file_code_extractor import convert_file
-import image_exporter
+from codeimagegenerator.file_code_extractor import convert_file
+from codeimagegenerator import image_exporter
 
 # TODO make config accessible from outside
 # config

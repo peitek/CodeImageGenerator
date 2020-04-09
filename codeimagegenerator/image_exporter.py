@@ -126,6 +126,7 @@ def create_image_from_code(language, function_name, code, code_task=""):
 
 
 def write_image_to_file(file_name, image):
+    print("Writing file to ", OUTPUT_DIRECTORY)
     if not os.path.isdir(OUTPUT_DIRECTORY):
         try:
             os.mkdir(OUTPUT_DIRECTORY)
