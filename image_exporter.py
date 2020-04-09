@@ -17,14 +17,18 @@ FONT_SIZE_CODE = 44
 
 DEFAULT_VERTICAL_PADDING = 1.6
 MINIMUM_VERTICAL_PADDING = 1.05
+MAXIMUM_WIDTH = 0.98
+MAXIMUM_HEIGHT = 0.95
 
 REMOVE_DEFAULT_INDENTATION = False
 DARKMODE = False
 
-IMAGE_SIZE_X = 1280  # 1920
-IMAGE_SIZE_Y = 1024  # 1080
+IMAGE_SIZE_X = 600 # 1280  # 1920
+IMAGE_SIZE_Y = 600 # 1024  # 1080
 
 OUTPUT_DIRECTORY = 'output_images'
+FILE_PREFIX = 'SC'
+FILE_PREFIX_COUNTER = 1
 
 
 def create_image_from_code(language, function_name, code, code_task=""):
@@ -35,20 +39,23 @@ def create_image_from_code(language, function_name, code, code_task=""):
     draw = ImageDraw.Draw(image)
 
     # draw instructions for code task after figuring out fitting font size
-    font_size_instruction = FONT_SIZE_INSTRUCTION
-    while True:
-        inconsolata_instructions = ImageFont.truetype('fonts/Inconsolata-Regular.ttf', font_size_instruction)
+    if code_task:
+        font_size_instruction = FONT_SIZE_INSTRUCTION
+        while True:
+            inconsolata_instructions = ImageFont.truetype('fonts/Inconsolata-Regular.ttf', font_size_instruction)
 
-        (instruction_width, instruction_height) = ImageDraw.ImageDraw(image).textsize(text=code_task, font=inconsolata_instructions)
+            (instruction_width, instruction_height) = ImageDraw.ImageDraw(image).textsize(text=code_task, font=inconsolata_instructions)
 
-        if instruction_width > 0.95*IMAGE_SIZE_X:
-            print('-> Too much instruction text to horizontally fit on the configured image size -> trying a smaller font')
+            if instruction_width > 0.95*IMAGE_SIZE_X:
+                print('-> Too much instruction text to horizontally fit on the configured image size -> trying a smaller font: ' + str(font_size_instruction))
 
-            font_size_instruction -= 1
-        else:
-            break
+                font_size_instruction -= 1
+            else:
+                break
 
-    draw.text((IMAGE_SIZE_X / 2 - instruction_width / 2, (IMAGE_SIZE_Y / 30)), code_task, FONT_COLOR_INSTRUCTION, font=inconsolata_instructions)
+        draw.text((IMAGE_SIZE_X / 2 - instruction_width / 2, (IMAGE_SIZE_Y / 30)), code_task, FONT_COLOR_INSTRUCTION, font=inconsolata_instructions)
+    else:
+        instruction_width, instruction_height = (0, 0)
 
     # draw code
     code_in_html = create_syntax_highlighting_html(language, code)
@@ -64,16 +71,17 @@ def create_image_from_code(language, function_name, code, code_task=""):
         (allTextSizeX, allTextSizeY) = ImageDraw.ImageDraw(image).multiline_textsize(text=code, font=inconsolata)
         allTextSizeY *= additional_vertical_padding  # for additional vertical padding, otherwise the text is too hard to read
 
-        if allTextSizeX > 0.95*IMAGE_SIZE_X:
-            print('-> Too much code text to horizontally fit on the configured image size -> trying a smaller font')
+        if allTextSizeX > MAXIMUM_WIDTH * IMAGE_SIZE_X:
+            print('-> Too much code text to horizontally fit on the configured image size -> trying a smaller font ' + str(font_size))
 
             font_size -= 1
-        elif allTextSizeY > 0.85 * (IMAGE_SIZE_Y - instruction_height):
-            print('-> Too much code text to vertically fit on the configured image size -> trying a smaller font and less padding')
-
-            font_size -= 1
+        elif allTextSizeY > MAXIMUM_HEIGHT * (IMAGE_SIZE_Y - instruction_height):
             if additional_vertical_padding > MINIMUM_VERTICAL_PADDING:
+                print('-> Too much code text to vertically fit on the configured image size -> trying less padding: ' + str(additional_vertical_padding))
                 additional_vertical_padding -= 0.08
+            else:
+                print('-> Too much code text to vertically fit on the configured image size -> a smaller font (' + str(font_size) + ')')
+                font_size -= 1
         else:
             break
 
@@ -123,6 +131,11 @@ def write_image_to_file(file_name, image):
             os.mkdir(OUTPUT_DIRECTORY)
         except Exception:
             print("Error creating the output repository")
+
+    if FILE_PREFIX:
+        global FILE_PREFIX_COUNTER
+        file_name = FILE_PREFIX + str(FILE_PREFIX_COUNTER) + '_' + file_name
+        FILE_PREFIX_COUNTER += 1
 
     image.save(join(OUTPUT_DIRECTORY, file_name + '.png'), 'PNG')
 

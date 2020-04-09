@@ -1,5 +1,9 @@
 # Changelog #
 
+## 0.4.1 (2020-04-09)
+- Use more available space for larger images
+- Bug fix
+
 ## 0.4.0 (2020-04-08)
 - Added `requirements.txt`
 - Add support for either dark or light export
