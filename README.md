@@ -1,5 +1,7 @@
 # CodeImageGenerator
 
+![Tests](https://github.com/peitek/CodeImageGenerator/workflows/tests/badge.svg)
+
 CodeImageGenerator is a Python script, which converts Java or Python files/functions to images. This includes a rough custom syntax highlighting with [Pygments](http://pygments.org/).
 
 I personally use this to convert short code snippets for empirical research on program comprehension (see [Brains on Code](https://github.com/brains-on-code)).
