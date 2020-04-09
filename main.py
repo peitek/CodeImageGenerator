@@ -13,7 +13,7 @@ STRIP_BOILERPLATE_CODE = False
 
 # if only specific files should be selected based on their (sub)-names, set this to True and customize FILE_SELECTION_SUBSTRINGS
 LIMIT_TO_FILES_WITH_PARTICULAR_SUBSTRING = False
-FILE_SELECTION_SUBSTRINGS = ['BU', 'LOBO', 'LOBS']
+FILE_SELECTION_SUBSTRINGS = ['Contains']
 
 
 def main():
@@ -25,8 +25,8 @@ def main():
         if LIMIT_TO_FILES_WITH_PARTICULAR_SUBSTRING:
             # only select files with a particular string in their name
             if any(x in file_name for x in FILE_SELECTION_SUBSTRINGS):
-                [function_name, code_function_string, code_task] = convert_file(CODE_FILE_DIRECTORY, CODE_LANGUAGE, file_name)
-                image_exporter.create_image_from_code(function_name, code_function_string, code_task)
+                [function_name, code_function_string, code_task] = convert_file(CODE_FILE_DIRECTORY, CODE_LANGUAGE, STRIP_BOILERPLATE_CODE, file_name)
+                image_exporter.create_image_from_code(CODE_LANGUAGE, function_name, code_function_string, code_task)
         else:
             [function_name, code_function_string, code_task] = convert_file(CODE_FILE_DIRECTORY, CODE_LANGUAGE, STRIP_BOILERPLATE_CODE, file_name)
             image_exporter.create_image_from_code(CODE_LANGUAGE, function_name, code_function_string, code_task)
