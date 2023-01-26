@@ -4,10 +4,8 @@ from os.path import isfile, join
 from codeimagegenerator.file_code_extractor import convert_file
 from codeimagegenerator import image_exporter
 
-# TODO make config accessible from outside
-# config
-
-CODE_FILE_DIRECTORY = "C:/Users/Norman/Documents/Research/fmri-study-code-complexity-metrics/complexity-snippets/src/progcode5_prestudy"
+PROJECT_DIRECTORY = "C:/Users/norma/Documents/Research/CodeImageGenerator/" # TODO change to your setup
+CODE_FILE_DIRECTORY = "tests/sample"
 CODE_LANGUAGE = 'Java'
 STRIP_BOILERPLATE_CODE = False
 
@@ -18,17 +16,22 @@ FILE_SELECTION_SUBSTRINGS = ['Contains']
 
 def main():
     # TODO let this program be executable from the command line
+    working_directory = join(PROJECT_DIRECTORY, CODE_FILE_DIRECTORY)
+    print('checking directory', working_directory)
+
     # read all files from a directory and loop through them
-    only_files = [f for f in os.listdir(CODE_FILE_DIRECTORY) if isfile(join(CODE_FILE_DIRECTORY, f))]
+    only_files = [f for f in os.listdir(working_directory) if isfile(join(working_directory, f))]
 
     for file_name in only_files:
+        print('checking file', file_name)
+
         if LIMIT_TO_FILES_WITH_PARTICULAR_SUBSTRING:
             # only select files with a particular string in their name
             if any(x in file_name for x in FILE_SELECTION_SUBSTRINGS):
-                [function_name, code_function_string, code_task] = convert_file(CODE_FILE_DIRECTORY, CODE_LANGUAGE, STRIP_BOILERPLATE_CODE, file_name)
+                [function_name, code_function_string, code_task] = convert_file(working_directory, CODE_LANGUAGE, STRIP_BOILERPLATE_CODE, file_name)
                 image_exporter.create_image_from_code(CODE_LANGUAGE, function_name, code_function_string, code_task)
         else:
-            [function_name, code_function_string, code_task] = convert_file(CODE_FILE_DIRECTORY, CODE_LANGUAGE, STRIP_BOILERPLATE_CODE, file_name)
+            [function_name, code_function_string, code_task] = convert_file(working_directory, CODE_LANGUAGE, STRIP_BOILERPLATE_CODE, file_name)
             image_exporter.create_image_from_code(CODE_LANGUAGE, function_name, code_function_string, code_task)
 
 

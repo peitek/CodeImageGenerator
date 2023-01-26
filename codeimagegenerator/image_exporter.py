@@ -17,16 +17,17 @@ FONT_SIZE_CODE = 44
 
 DEFAULT_VERTICAL_PADDING = 1.6
 MINIMUM_VERTICAL_PADDING = 1.05
-MAXIMUM_WIDTH = 0.98
-MAXIMUM_HEIGHT = 0.95
+MAXIMUM_WIDTH = 0.95
+MAXIMUM_HEIGHT = 0.85
 
 REMOVE_DEFAULT_INDENTATION = False
 DARKMODE = False
 
-IMAGE_SIZE_X = 600  # 1280  # 1920
-IMAGE_SIZE_Y = 600  # 1024  # 1080
+IMAGE_SIZE_X = 1920 # 600  # 1280  
+IMAGE_SIZE_Y = 1080 # 600  # 1024 
 
-OUTPUT_DIRECTORY = 'output_images'
+PROJECT_DIRECTORY = "C:/Users/norma/Documents/Research/CodeImageGenerator/" # TODO change to your setup
+OUTPUT_DIRECTORY = join(PROJECT_DIRECTORY + 'output_images')
 FILE_PREFIX = 'SC'
 FILE_PREFIX_COUNTER = 1
 
@@ -42,7 +43,7 @@ def create_image_from_code(language, function_name, code, code_task=""):
     if code_task:
         font_size_instruction = FONT_SIZE_INSTRUCTION
         while True:
-            inconsolata_instructions = ImageFont.truetype('fonts/Inconsolata-Regular.ttf', font_size_instruction)
+            inconsolata_instructions = ImageFont.truetype(join(PROJECT_DIRECTORY + 'fonts/Inconsolata-Regular.ttf'), font_size_instruction)
 
             (instruction_width, instruction_height) = ImageDraw.ImageDraw(image).textsize(text=code_task, font=inconsolata_instructions)
 
@@ -67,7 +68,7 @@ def create_image_from_code(language, function_name, code, code_task=""):
     font_size = FONT_SIZE_CODE
     additional_vertical_padding = DEFAULT_VERTICAL_PADDING
     while True:
-        inconsolata = ImageFont.truetype('fonts/Inconsolata-Regular.ttf', font_size)
+        inconsolata = ImageFont.truetype(join(PROJECT_DIRECTORY + '/fonts/Inconsolata-Regular.ttf'), font_size)
 
         (allTextSizeX, allTextSizeY) = ImageDraw.ImageDraw(image).multiline_textsize(text=code, font=inconsolata)
         allTextSizeY *= additional_vertical_padding  # for additional vertical padding, otherwise the text is too hard to read
